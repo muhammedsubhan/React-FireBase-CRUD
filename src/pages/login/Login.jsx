@@ -4,6 +4,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [err, setErr] = useState(false);
@@ -48,6 +49,9 @@ const Login = () => {
           <button type="submit">Login</button>
           {err && <span>Wrong email or password</span>}
         </form>
+        <span className="register">
+          don't have an account <Link to="/register">Register here</Link>.
+        </span>
       </div>
     </>
   );
