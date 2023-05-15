@@ -34,7 +34,7 @@ const Register = () => {
     if (!values.password) {
       error.password = "Password is Required";
     }
-    if (values.password > 6) {
+    if (values.password < 8) {
       error.password = "Password must be greater then 8 characters";
     }
     if (!values.confirmPassword) {
