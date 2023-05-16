@@ -48,7 +48,7 @@ const Register = () => {
     return error;
   };
 
-  const handlesubmit = async (e) => {
+  const handlesubmit = (e) => {
     e.preventDefault();
     setError(Validation(data));
 
