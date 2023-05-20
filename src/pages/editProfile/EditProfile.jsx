@@ -1,20 +1,18 @@
-import "./new.scss";
-import Sidebar from "../../components/sidebar/Sidebar";
-import Navbar from "../../components/navbar/Navbar";
+import React, { useState, useEffect, useContext, createContext } from "react";
+import "./editProfile.scss";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { db, auth, storage } from "../../firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { useNavigate } from "react-router-dom";
+import { storage } from "../../firebase";
+import { AuthContext } from "../../context/AuthContext";
 
-const New = ({ inputs, title }) => {
+export const EditProfileContext = createContext();
+
+const EditProfile = ({ dataEdit }) => {
+  const { currentUser } = useContext(AuthContext);
   const [file, setFile] = useState("");
+  const [Name, setName] = useState("");
   const [data, setData] = useState({});
-  const [perc, setPerc] = useState("");
-
-  const navigate = useNavigate();
+  const [profileData, setProfileData] = useState(currentUser);
 
   useEffect(() => {
     const uploadFile = () => {
@@ -28,7 +26,6 @@ const New = ({ inputs, title }) => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log("Upload is " + progress + "% done");
-          setPerc(progress);
           switch (snapshot.state) {
             case "paused":
               console.log("Upload is paused");
@@ -45,45 +42,31 @@ const New = ({ inputs, title }) => {
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setData((prev) => ({ ...prev, img: downloadURL }));
+            setData(() => ({ Name, img: downloadURL }));
           });
         }
       );
     };
 
     file && uploadFile();
-  }, [file]);
+  }, [file, Name]);
 
-  const handleInput = (e) => {
-    const id = e.target.id;
-    const value = e.target.value;
-
-    setData({ ...data, [id]: value });
-  };
-
-  const handleAdd = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      createUserWithEmailAndPassword(auth, data.email, data.password);
-      await addDoc(collection(db, "users"), {
-        ...data,
-        timeStamp: serverTimestamp(),
-      });
-      navigate(-1);
-    } catch (error) {
-      console.log(error);
-    }
+    currentUser.displayName = data.Name;
+    currentUser.photoURL = data.img;
+
+    setProfileData(() => ({
+      profileName: currentUser.displayName,
+      profileImg: currentUser.photoURL,
+    }));
+    dataEdit(profileData);
   };
 
   return (
-    <div className="new">
-      <Sidebar />
-      <div className="newContainer">
-        <Navbar />
-        <div className="top">
-          <h1>{title}</h1>
-        </div>
-        <div className="bottom">
+    <>
+      <EditProfileContext.Provider value={profileData}>
+        <div className="edit-profile">
           <div className="left">
             <img
               src={
@@ -94,8 +77,9 @@ const New = ({ inputs, title }) => {
               alt=""
             />
           </div>
+
           <div className="right">
-            <form onSubmit={handleAdd}>
+            <form onSubmit={handleSubmit}>
               <div className="formInput">
                 <label htmlFor="file">
                   Image: <DriveFolderUploadOutlinedIcon className="icon" />
@@ -108,26 +92,22 @@ const New = ({ inputs, title }) => {
                 />
               </div>
 
-              {inputs.map((input) => (
-                <div className="formInput" key={input.id}>
-                  <label>{input.label}</label>
-                  <input
-                    id={input.id}
-                    type={input.type}
-                    placeholder={input.placeholder}
-                    onChange={handleInput}
-                  />
-                </div>
-              ))}
-              <button type="submit" disabled={perc !== null && perc < 100}>
-                Send
-              </button>
+              <div className="inputs">
+                <input
+                  type="text"
+                  placeholder="Name"
+                  value={Name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+
+              <button type="submit">Save As</button>
             </form>
           </div>
         </div>
-      </div>
-    </div>
+      </EditProfileContext.Provider>
+    </>
   );
 };
 
-export default New;
+export default EditProfile;

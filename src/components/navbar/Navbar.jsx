@@ -7,10 +7,25 @@ import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNone
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
 import { DarkModeContext } from "../../context/darkModeContext";
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import EditProfile from "../../pages/editProfile/EditProfile";
 
 const Navbar = () => {
   const { dispatch } = useContext(DarkModeContext);
+  const [editProfile, setEditProfile] = useState(false);
+  const [imageToggle, setImageToggle] = useState(false);
+  const [EditData, setEditData] = useState({});
+
+  const handleProfile = () => {
+    setEditProfile((prev) => {
+      return !prev;
+    });
+  };
+
+  const EditProfileData = (data) => {
+    setImageToggle(true);
+    setEditData(data);
+  };
 
   return (
     <div className="navbar">
@@ -46,10 +61,16 @@ const Navbar = () => {
           </div>
           <div className="item">
             <img
-              src="https://images.pexels.com/photos/941693/pexels-photo-941693.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
+              src={
+                imageToggle
+                  ? EditData.profileImg
+                  : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"
+              }
               alt=""
               className="avatar"
+              onClick={handleProfile}
             />
+            {editProfile && <EditProfile dataEdit={EditProfileData} />}
           </div>
         </div>
       </div>
