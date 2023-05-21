@@ -7,21 +7,15 @@ import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNone
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
 import { DarkModeContext } from "../../context/darkModeContext";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import EditProfile from "../../pages/editProfile/EditProfile";
 
 const Navbar = () => {
-  const getLocalItems = () => {
-    let data = localStorage.getItem("my-data");
-    console.log(data);
-    if (data) {
-      return JSON.parse(localStorage.getItem("my-data"));
-    }
-  };
+  
   const { dispatch } = useContext(DarkModeContext);
   const [editProfile, setEditProfile] = useState(false);
   const [imageToggle, setImageToggle] = useState(false);
-  const [EditData, setEditData] = useState(getLocalItems());
+  const [EditData, setEditData] = useState({});
 
   const handleProfile = () => {
     setEditProfile((prev) => {
@@ -29,9 +23,7 @@ const Navbar = () => {
     });
   };
 
-  useEffect(() => {
-    localStorage.setItem("my-data", JSON.stringify(EditData));
-  }, [EditData]);
+  
 
   const EditProfileData = (data) => {
     setImageToggle(true);
