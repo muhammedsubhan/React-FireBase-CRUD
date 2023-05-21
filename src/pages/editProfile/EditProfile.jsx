@@ -61,6 +61,8 @@ const EditProfile = ({ dataEdit }) => {
       profileImg: currentUser.photoURL,
     }));
     dataEdit(profileData);
+
+    console.log("clicked data");
   };
 
   return (
